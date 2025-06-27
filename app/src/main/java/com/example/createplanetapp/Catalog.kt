@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.RecyclerView
 
 class Catalog : Fragment() {
 
+    private lateinit var sharedViewModel: SharedViewModel
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -65,26 +67,57 @@ class Catalog : Fragment() {
         val b_residence: Button = view.findViewById(R.id.residence_button)
         val b_services: Button = view.findViewById(R.id.services_button)
 
+        sharedViewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
+        sharedViewModel.catalogLastClickedButton.observe(viewLifecycleOwner) { buttonId ->
+            buttonId?.let {
+                when (it) {
+                    0 -> b_tours.performClick()
+                    1 -> b_excursions.performClick()
+                    2 -> b_residence.performClick()
+                    3 -> b_services.performClick()
+                }
+            }
+        }
+
+        sharedViewModel.catalogLastSpinnerOption1.observe(viewLifecycleOwner) { position ->
+            position?.let { spinner1.setSelection(it) }
+        }
+        sharedViewModel.catalogLastSpinnerOption2.observe(viewLifecycleOwner) { position ->
+            position?.let { spinner2.setSelection(it) }
+        }
+        sharedViewModel.catalogLastSpinnerOption3.observe(viewLifecycleOwner) { position ->
+            position?.let { spinner3.setSelection(it) }
+        }
+        sharedViewModel.catalogLastSpinnerOption4.observe(viewLifecycleOwner) { position ->
+            position?.let { spinner4.setSelection(it) }
+        }
+
+
+
         //Показать нужный spinner в зависимости от нажатой кнопки
         b_tours.setOnClickListener {
+            sharedViewModel.updateCatalogLastClickedButton(0)
             spinner1.visibility = View.VISIBLE
             spinner2.visibility = View.GONE
             spinner3.visibility = View.GONE
             spinner4.visibility = View.GONE
         }
         b_excursions.setOnClickListener {
+            sharedViewModel.updateCatalogLastClickedButton(1)
             spinner1.visibility = View.GONE
             spinner2.visibility = View.VISIBLE
             spinner3.visibility = View.GONE
             spinner4.visibility = View.GONE
         }
         b_residence.setOnClickListener {
+            sharedViewModel.updateCatalogLastClickedButton(2)
             spinner1.visibility = View.GONE
             spinner2.visibility = View.GONE
             spinner3.visibility = View.VISIBLE
             spinner4.visibility = View.GONE
         }
         b_services.setOnClickListener {
+            sharedViewModel.updateCatalogLastClickedButton(3)
             spinner1.visibility = View.GONE
             spinner2.visibility = View.GONE
             spinner3.visibility = View.GONE
@@ -97,6 +130,7 @@ class Catalog : Fragment() {
                 recyclerView.adapter = when (position) {
                     else -> null
                 }
+                sharedViewModel.updateCatalogLastSpinnerOption(1, position)
             }
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
@@ -107,6 +141,7 @@ class Catalog : Fragment() {
                     2 -> createAdapter(items_zagorodnie)
                     else -> null
                 }
+                sharedViewModel.updateCatalogLastSpinnerOption(2, position)
             }
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
@@ -115,6 +150,7 @@ class Catalog : Fragment() {
                 recyclerView.adapter = when (position) {
                     else -> null
                 }
+                sharedViewModel.updateCatalogLastSpinnerOption(3, position)
             }
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
@@ -123,6 +159,7 @@ class Catalog : Fragment() {
                 recyclerView.adapter = when (position) {
                     else -> null
                 }
+                sharedViewModel.updateCatalogLastSpinnerOption(4, position)
             }
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
